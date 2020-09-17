@@ -1,0 +1,234 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
+
+/* div, h1, form {
+    border: 1px dotted gray;
+} */
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 100px;
+    grid-template-areas:
+      "main-header main-header"
+      "main-city main-city-charts"
+      "favourites favourites"
+      "cities cities";
+    margin: 50px;
+}
+
+.main-header {
+    grid-area: main-header;
+    display: flex;
+    flex-direction: row;
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 33px;
+    color: #728188;
+    margin-top: 30px;
+}
+
+.main-header a {
+    color: #727f85;
+    text-decoration: none;
+    background-color: #c9d2d7;
+    border: solid 1px #c9d2d7;
+    border-radius: 5px;
+    padding: 10px 70px;
+    margin: 20px 0 30px 150px;
+}
+
+.main-header .for-small-screens {
+    display: none;
+}
+
+.main-city {
+    grid-area: main-city;
+}
+
+.main-city .city-name {
+    font-size: 33px;
+}
+
+.city-name {
+    font-size: 25px;
+    font-weight: bold;
+    color: #737f8b;
+}
+
+.main-city .img-and-temperature {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.main-city .img-and-temperature img {
+    width: 145px;
+    height: 145px;
+    border: 5px solid #737f8b;
+}
+
+.main-city .img-and-temperature span {
+    font-size: 150px;
+    margin-top: 50px;
+}
+
+.temperature {
+    font-size: 50px;
+    color: #7d7d7d;
+}
+
+
+.main-city-charts {
+    grid-area: main-city-charts;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #a7afb1;
+    flex-direction: row;
+    color: #f0fafc;
+    height: 25px;
+    padding: 5px 15px 5px;
+    margin: 10px 0 10px 0;
+}
+
+li .chart-name {
+    font-weight: bold;
+}
+
+.favourites {
+    grid-area: favourites;
+    display: grid;
+    grid-template-areas:
+      "favourites-left favourites-right";
+    justify-content: space-between;
+    align-items: center;
+}
+
+.favourites h1 {
+    grid-area: favourites-left;
+}
+
+.favourites form {
+    grid-area: favourites-right;
+}
+
+.favourites .add-city-form input[type="text"] {
+    background-color: #f1f1f1;
+    color: #737f8b;
+    width: 340px;
+    padding: 10px 0 10px 10px;
+    margin-right: 10px;
+}
+
+.btn {
+    background-color: #708188;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    padding: 5px 10px;
+}
+
+.cities {
+    grid-area: cities;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 100px;
+}
+
+.city {
+    display: flex;
+    flex-direction: column;
+}
+
+.city-charts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.city-charts-left {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.city-charts span {
+    margin-left: 50px;
+}
+
+.city-charts img {
+    width: 56px;
+    height: 56px;
+    border: 3px solid #737f8b;
+    margin-left: 30px;
+}
+
+
+@media screen and (max-width: 1000px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+        "main-header"
+        "main-city"
+        "main-city-charts"
+        "favourites"
+        "cities";
+    }
+
+    .cities {
+        grid-area: cities;
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .main-header a {
+        background-color: #c9d2d7;
+        color: #727f85;
+        text-decoration: none;
+        border: solid 1px #c9d2d7;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 20px 0 30px 50px;
+    }
+
+    .main-header .for-large-screens {
+        display: none;
+    }
+
+    .main-header .for-small-screens {
+        display: block;
+    }
+
+    .favourites {
+        grid-area: favourites;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+        "favourites-left"
+        "favourites-right";
+        align-items: center;
+    }
+}
+
