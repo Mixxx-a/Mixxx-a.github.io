@@ -1,1 +1,1 @@
-(mixxx-a.github.io)
+https://mixxx-a.github.io/
