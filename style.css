@@ -13,10 +13,7 @@ body {
     grid-template-areas:
       "header"
       "main";
-      /* "main-city main-city-charts"
-      "favourites favourites"
-      "cities cities"; */
-    margin: 50px;
+    margin: 20px;
 }
 
 header {
@@ -91,13 +88,13 @@ h2 {
     grid-area: main-city-charts;
 }
 
-ul {
+ul, ol {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-li {
+ul li {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -153,11 +150,6 @@ li .chart-name {
     column-gap: 100px;
 }
 
-.city {
-    display: flex;
-    flex-direction: column;
-}
-
 h3 {
     font-size: 30px;
     color: #737f8b;
@@ -202,10 +194,11 @@ h3 {
     .btn-update {
         background-color: #c9d2d7;
         color: #727f85;
+        font-size: 25px;
         text-decoration: none;
         border: solid 1px #c9d2d7;
         border-radius: 5px;
-        padding: 10px 20px;
+        padding: 5px 15px;
         margin: 20px 0 30px 50px;
     }
 
