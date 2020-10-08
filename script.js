@@ -1,4 +1,20 @@
-window.onload = () => (updateWeather());
+window.onload = () => {
+    updateWeather();
+    loadCitiesFromStorage();
+};
+
+/* const fetchoutput = {
+    clouds: {all: 90},
+    coord: {lon: 30.37, lat: 59.92},
+    main: {temp: 286.16, pressure: 1015, humidity: 93},
+    weather: [
+        {id: 804, main: "Clouds", description: "overcast clouds", icon: "04n"}
+        ],
+    name: "Smolenskoye",
+    wind: {speed: 2, deg: 120},
+    cod: 200
+} */
+
 
 function updateWeather() {
     if (navigator.geolocation) {
@@ -6,23 +22,47 @@ function updateWeather() {
     } else {
         alert("Geolocation is not supported by this browser.");
     }
-
-    loadCitiesFromStorage();
-
 }
 
 function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    const data = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+    }
+    PostMainCityWeather(data, "position");
+}
 
-    //const json = fetchByCoords(latitude, longitude);
-    //json.then(result => putValues(result));
+function PostMainCityWeather(data, type) {
+
+    const loader = getLoader();
+    const mainCitySection = document.getElementById("main-city-section")
+    if (mainCitySection.firstElementChild) {
+        mainCitySection.removeChild(mainCitySection.firstElementChild);
+        mainCitySection.removeChild(mainCitySection.firstElementChild);
+    }
+    mainCitySection.appendChild(loader);
+
+    let weatherData;
+    switch (type) {
+        case 'position':
+            weatherData = fetchByCoords(data.latitude, data.longitude);
+            break;
+        case 'cityName':
+            weatherData = fetchByCityName(data);
+            break;
+    }
+    weatherData.then((result) => {
+        //loader.id = result.id + "loader";
+        const template = getTemplate(result, "main-");
+       // document.getElementById(loader.id).remove();
+        mainCitySection.getElementsByClassName("loader")[0].remove();
+        mainCitySection.appendChild(template)
+    })
 }
 
 function error() {
     alert("Unable to retrieve your location; Loading default...");
-    //const json = fetchByCityName("Saint Petersburg");
-    //json.then(result => putValues(result));
+    PostMainCityWeather("Saint-Petersburg", "cityName");
 }
 
 function fetchByCoords(latitude, longitude) {
@@ -57,60 +97,81 @@ function fetchByCityName(cityName) {
         .catch(err => console.log(err));
 }
 
-function putValues(json) {
+function getTemplate(json, prefix) {
+
     console.log(json);
-    document.getElementById("main-location").innerText =
-        json.name;
-    document.getElementById("main-img").src =
+
+    const temp = document.getElementById(prefix + "city").content;
+    const copytemp = document.importNode(temp, true);
+
+    copytemp.getElementById(prefix + "location").innerText = json.name;
+    copytemp.getElementById(prefix + "img").src =
         "img/" + json.weather[0].icon + ".png";
-    document.getElementById("temperature").innerText =
+    copytemp.getElementById(prefix + "temperature").innerText =
         parseFloat(json.main.temp - 273.15).toFixed(0) + "°С";
-    document.getElementById("wind").innerText =
+    copytemp.getElementById(prefix + "wind").innerText =
         "Degree: " + json.wind.deg + "°, " + json.wind.speed + " m/s";
-    document.getElementById("clouds").innerText =
+    copytemp.getElementById(prefix + "clouds").innerText =
         json.clouds.all + " %";
-    document.getElementById("pressure").innerText =
+    copytemp.getElementById(prefix + "pressure").innerText =
         json.main.pressure + " hpa";
-    document.getElementById("humidity").innerText =
+    copytemp.getElementById(prefix + "humidity").innerText =
         json.main.humidity + " %";
-    document.getElementById("coordinates").innerText =
+    copytemp.getElementById(prefix + "coords").innerText =
         "[" + json.coord.lat + ", " + json.coord.lon + "]";
+
+    if (prefix === "fav-") {
+        copytemp.getElementById("close-btn").value = json.id;
+        copytemp.getElementById("start").id = json.id;
+    }
+
+    return copytemp;
 }
 
 function addCity() {
     const cityName = document.getElementById("form-city-name").value;
-    if(!localStorage[cityName]) {
-        localStorage.setItem(cityName, 1);
-        PostWeatherOfCity(cityName);
-    }
+    PostCityWeather(cityName);
 }
 
 function loadCitiesFromStorage() {
-    for(let i = 0; i < localStorage.length; i++) {
-        let cityName = localStorage.key(i);
-        PostWeatherOfCity(cityName)
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        PostCityWeather(localStorage.getItem(key));
     }
 }
 
-function PostWeatherOfCity(cityName) {
-    const temp = document.getElementById("fav-city").content;
-    const loader = document.getElementById("loader").content;
+function PostCityWeather(cityName) {
 
-    const copytemp = document.importNode(temp, true);
-    const copyloader = document.importNode(loader, true);
-
+    const loader = getLoader();
     const ol = document.getElementById("cities");
-    ol.appendChild(copyloader);
+    ol.appendChild(loader);
 
-    copytemp.getElementById("city-name").textContent = cityName;
-    copytemp.getElementById("close-btn").id = "close-btn-" + cityName;
-
-    setTimeout(() => {
-        ol.removeChild(copyloader)
-        ol.appendChild(copytemp)
-    }, 3000);
+    const weatherData = fetchByCityName(cityName)
+        .then((result) => {
+            if (result.cod == 404 || result.cod == 400) {
+                alert("City was not found");
+                ol.getElementsByClassName("loader")[0].remove();
+                return;
+            }
+            if (!localStorage[result.id]) {
+                localStorage.setItem(result.id, cityName);
+            }
+            //loader.id = result.id + "loader";
+            const template = getTemplate(result, "fav-");
+            //document.getElementById(loader.id).remove();
+            ol.getElementsByClassName("loader")[0].remove();
+            ol.appendChild(template);
+        })
 }
 
-function removeCity() {
-    //localStorage.removeItem(cityname);
+function removeCity(cityId) {
+    localStorage.removeItem(cityId);
+    document.getElementById(cityId).remove();
+
+}
+
+function getLoader() {
+    const loader = document.getElementById("loader").content;
+    const loaderCopy = document.importNode(loader, true);
+    return loaderCopy;
 }

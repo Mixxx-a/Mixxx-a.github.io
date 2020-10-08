@@ -21,87 +21,99 @@
         </button>
     </header>
     <main>
-        <section class="main-city">
-            <h2 id="main-location"></h2>
-            <div class="img-and-temperature">
-                <img src="" id="main-img" alt="Иконка погоды">
-                <span class="temperature" id="temperature"></span>
-            </div>
-        </section>
-        <section class="main-city-charts">
-            <ul>
-                <li>
-                    <span class="chart-name">Ветер</span>
-                    <span class="chart-value" id="wind"></span>
-                </li>
-                <li>
-                    <span class="chart-name">Облачность</span>
-                    <span class="chart-value" id="clouds"></span>
-                </li>
-                <li>
-                    <span class="chart-name">Давление</span>
-                    <span class="chart-value" id="pressure"></span>
-                </li>
-                <li>
-                    <span class="chart-name">Влажность</span>
-                    <span class="chart-value" id="humidity"></span>
-                </li>
-                <li>
-                    <span class="chart-name">Координаты</span>
-                    <span class="chart-value" id="coordinates"></span>
-                </li>
-            </ul>
+        <section id="main-city-section">
+
         </section>
         <section class="favourites">
             <h2>Избранное</h2>
-            <form onsubmit="addCity(); return false" class="add-city-form" method="POST" action="#">
-                <input type="text" name="add-city" id="form-city-name" placeholder="Добавить новый город">
-                <input type="submit" class="btn" value="+">
+            <form action="#" class="add-city-form" method="POST" onsubmit="addCity(); return false">
+                <input id="form-city-name" name="add-city" placeholder="Добавить новый город" type="text">
+                <input class="btn" type="submit" value="+">
             </form>
         </section>
         <ol class="cities" id="cities">
+
         </ol>
     </main>
 </div>
 
 <template id="loader">
-    <li>
+    <div class="loader">
         <p>Подождите, данные загружаются</p>
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-    </li>
+        <div class="lds-ellipsis">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</template>
+
+<template id="main-city">
+    <div class="main-city">
+        <h2 id="main-location"></h2>
+        <div class="img-and-temperature">
+            <img id="main-img" alt="Иконка погоды">
+            <span class="temperature" id="main-temperature"></span>
+        </div>
+    </div>
+    <div class="main-city-charts">
+        <ul>
+            <li>
+                <span class="chart-name">Ветер</span>
+                <span class="chart-value" id="main-wind"></span>
+            </li>
+            <li>
+                <span class="chart-name">Облачность</span>
+                <span class="chart-value" id="main-clouds"></span>
+            </li>
+            <li>
+                <span class="chart-name">Давление</span>
+                <span class="chart-value" id="main-pressure"></span>
+            </li>
+            <li>
+                <span class="chart-name">Влажность</span>
+                <span class="chart-value" id="main-humidity"></span>
+            </li>
+            <li>
+                <span class="chart-name">Координаты</span>
+                <span class="chart-value" id="main-coords"></span>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <template id="fav-city">
-    <li>
+    <li id = "start">
         <div class="city-charts">
             <div class="city-charts-left">
-                <h3 id="city-name"></h3>
-                <span class="temperature"></span>
-                <img alt="Иконка погоды">
+                <h3 id="fav-location"></h3>
+                <span class="temperature" id="fav-temperature"></span>
+                <img id="fav-img" alt="Иконка погоды">
             </div>
-            <button class="btn" id="close-btn" onclick="removeCity()">x</button>
+            <button class="btn" id="close-btn" onclick="removeCity(this.value)">x</button>
         </div>
         <div class="city-values">
             <ul>
                 <li>
                     <span class="chart-name">Ветер</span>
-                    <span class="chart-value"></span>
+                    <span class="chart-value" id="fav-wind"></span>
                 </li>
                 <li>
                     <span class="chart-name">Облачность</span>
-                    <span class="chart-value"></span>
+                    <span class="chart-value" id="fav-clouds"></span>
                 </li>
                 <li>
                     <span class="chart-name">Давление</span>
-                    <span class="chart-value"></span>
+                    <span class="chart-value" id="fav-pressure"></span>
                 </li>
                 <li>
                     <span class="chart-name">Влажность</span>
-                    <span class="chart-value"></span>
+                    <span class="chart-value" id="fav-humidity"></span>
                 </li>
                 <li>
                     <span class="chart-name">Координаты</span>
-                    <span class="chart-value"></span>
+                    <span class="chart-value" id="fav-coords"></span>
                 </li>
             </ul>
         </div>
