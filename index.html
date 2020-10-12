@@ -21,19 +21,19 @@
         </button>
     </header>
     <main>
-        <section id="main-city-section">
+        <section class="main-city-section" id="main-city-section">
 
         </section>
-        <section class="favourites">
+        <section class="favourites-section">
             <h2>Избранное</h2>
-            <form action="#" class="add-city-form" method="POST" onsubmit="addCity(); return false">
+            <form action="#" class="add-city-form" id="add-city-form" method="POST" onsubmit="addCity(); return false">
                 <input id="form-city-name" name="add-city" placeholder="Добавить новый город" type="text">
                 <input class="btn" type="submit" value="+">
             </form>
         </section>
-        <ol class="cities" id="cities">
+        <ul class="cities-ul" id="cities-ul">
 
-        </ol>
+        </ul>
     </main>
 </div>
 
@@ -50,15 +50,15 @@
 </template>
 
 <template id="main-city">
-    <div class="main-city">
+    <div class="main-city-charts">
         <h2 id="main-location"></h2>
         <div class="img-and-temperature">
             <img id="main-img" alt="Иконка погоды">
             <span class="temperature" id="main-temperature"></span>
         </div>
     </div>
-    <div class="main-city-charts">
-        <ul>
+    <div class="main-city-values">
+        <ul class="city-charts-ul">
             <li>
                 <span class="chart-name">Ветер</span>
                 <span class="chart-value" id="main-wind"></span>
@@ -94,7 +94,7 @@
             <button class="btn" id="close-btn" onclick="removeCity(this.value)">x</button>
         </div>
         <div class="city-values">
-            <ul>
+            <ul class="city-charts-ul">
                 <li>
                     <span class="chart-name">Ветер</span>
                     <span class="chart-value" id="fav-wind"></span>

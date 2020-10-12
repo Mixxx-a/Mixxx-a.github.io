@@ -46,12 +46,19 @@ h1 {
 .main {
     grid-area: main;
     display: grid;
+    grid-template-areas:
+      "main-city-section"
+      "favourites-section"
+      "cities-ul";
+}
+
+.main-city-section {
+    grid-area: main-city-section;
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     column-gap: 100px;
     grid-template-areas:
-      "main-city-main main-city-charts"
-      "favourites favourites"
-      "cities cities";
+    "main-city-charts main-city-values"
 }
 
 h2 {
@@ -60,20 +67,24 @@ h2 {
     font-weight: bold;
 }
 
-.main-city .img-and-temperature {
+.main-city-charts {
+    grid-area: main-city-charts;
+}
+
+.main-city-charts .img-and-temperature {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.main-city .img-and-temperature img {
+.main-city-charts img {
     width: 145px;
     height: 145px;
     border: 5px solid #737f8b;
 }
 
-.main-city .img-and-temperature span {
+.main-city-charts .img-and-temperature span {
     font-size: 150px;
     margin-top: 50px;
 }
@@ -83,18 +94,17 @@ h2 {
     color: #7d7d7d;
 }
 
-
-.main-city-charts {
-    grid-area: main-city-charts;
+.main-city-values {
+    grid-area: main-city-values;
 }
 
-ul, ol {
+ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-ul li {
+.city-charts-ul li {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -106,12 +116,12 @@ ul li {
     margin: 10px 0 10px 0;
 }
 
-li .chart-name {
+.city-charts-ul .chart-name {
     font-weight: bold;
 }
 
-.favourites {
-    grid-area: favourites;
+.favourites-section {
+    grid-area: favourites-section;
     display: grid;
     grid-template-areas:
       "favourites-left favourites-right";
@@ -119,15 +129,15 @@ li .chart-name {
     align-items: center;
 }
 
-.favourites h2 {
+.favourites-section h2 {
     grid-area: favourites-left;
 }
 
-.favourites form {
+.favourites-section form {
     grid-area: favourites-right;
 }
 
-.favourites .add-city-form input[type="text"] {
+.favourites-section .add-city-form input[type="text"] {
     background-color: #f1f1f1;
     color: #737f8b;
     width: 340px;
@@ -143,8 +153,8 @@ li .chart-name {
     padding: 5px 10px;
 }
 
-.cities {
-    grid-area: cities;
+.cities-ul {
+    grid-area: cities-ul;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     column-gap: 100px;
@@ -278,28 +288,26 @@ h3 {
         display: block;
     }
 
-    .main {
-        grid-area: main;
+    .main-city-section {
+        grid-area: main-city-section;
         display: grid;
         grid-template-columns: 1fr;
         grid-template-areas:
-      "main-city-main"
-      "main-city-charts"
-      "favourites"
-      "cities";
+        "main-city-charts"
+        "main-city-values";
+        align-items: center;
     }
 
-    .favourites {
+    .favourites-section {
         grid-area: favourites;
         display: grid;
-        grid-template-columns: 1fr;
         grid-template-areas:
         "favourites-left"
         "favourites-right";
         align-items: center;
     }
 
-    .cities {
+    .cities-ul {
         grid-area: cities;
         display: grid;
         grid-template-columns: 1fr;

@@ -25,15 +25,10 @@ function updateWeather() {
 }
 
 function success(position) {
-    const data = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-    }
-    PostMainCityWeather(data, "position");
+    PostMainCityWeather(position.coords.latitude, position.coords.longitude);
 }
 
-function PostMainCityWeather(data, type) {
-
+function PostMainCityWeather( latitude, longitude,) {
     const loader = getLoader();
     const mainCitySection = document.getElementById("main-city-section")
     if (mainCitySection.firstElementChild) {
@@ -42,15 +37,7 @@ function PostMainCityWeather(data, type) {
     }
     mainCitySection.appendChild(loader);
 
-    let weatherData;
-    switch (type) {
-        case 'position':
-            weatherData = fetchByCoords(data.latitude, data.longitude);
-            break;
-        case 'cityName':
-            weatherData = fetchByCityName(data);
-            break;
-    }
+    const weatherData = fetchByCoords(latitude, longitude);
     weatherData.then((result) => {
         //loader.id = result.id + "loader";
         const template = getTemplate(result, "main-");
@@ -62,7 +49,7 @@ function PostMainCityWeather(data, type) {
 
 function error() {
     alert("Unable to retrieve your location; Loading default...");
-    PostMainCityWeather("Saint-Petersburg", "cityName");
+    PostMainCityWeather(59.89, 30.26);
 }
 
 function fetchByCoords(latitude, longitude) {
@@ -78,7 +65,12 @@ function fetchByCoords(latitude, longitude) {
         }
     })
         .then(response => response.json())
-        .catch(err => console.log(err));
+        .catch(err => {
+            const mainCitySection = document.getElementById("main-city-section");
+            mainCitySection.getElementsByClassName("loader")[0].remove();
+            alert("Unable to load weather");
+            console.log(err)
+    });
 }
 
 function fetchByCityName(cityName) {
@@ -94,7 +86,12 @@ function fetchByCityName(cityName) {
         }
     })
         .then(response => response.json())
-        .catch(err => console.log(err));
+        .catch(err => {
+            const ul = document.getElementById("cities-ul");
+            ul.getElementsByClassName("loader")[0].remove();
+            alert("Unable to load " + cityName + " weather");
+            console.log(err);
+        });
 }
 
 function getTemplate(json, prefix) {
@@ -129,8 +126,20 @@ function getTemplate(json, prefix) {
 }
 
 function addCity() {
+    let flag = 1;
+    const form = document.getElementById("add-city-form");
     const cityName = document.getElementById("form-city-name").value;
-    PostCityWeather(cityName);
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (localStorage.getItem(key) === cityName) {
+            alert("This city is already in favourites");
+            flag = 0;
+            break;
+        }
+    }
+    form.reset();
+    if(flag)
+        PostCityWeather(cityName);
 }
 
 function loadCitiesFromStorage() {
@@ -143,14 +152,14 @@ function loadCitiesFromStorage() {
 function PostCityWeather(cityName) {
 
     const loader = getLoader();
-    const ol = document.getElementById("cities");
-    ol.appendChild(loader);
+    const ul = document.getElementById("cities-ul");
+    ul.appendChild(loader);
 
     const weatherData = fetchByCityName(cityName)
         .then((result) => {
             if (result.cod == 404 || result.cod == 400) {
                 alert("City was not found");
-                ol.getElementsByClassName("loader")[0].remove();
+                ul.getElementsByClassName("loader")[0].remove();
                 return;
             }
             if (!localStorage[result.id]) {
@@ -159,8 +168,8 @@ function PostCityWeather(cityName) {
             //loader.id = result.id + "loader";
             const template = getTemplate(result, "fav-");
             //document.getElementById(loader.id).remove();
-            ol.getElementsByClassName("loader")[0].remove();
-            ol.appendChild(template);
+            ul.getElementsByClassName("loader")[0].remove();
+            ul.appendChild(template);
         })
 }
 
@@ -172,6 +181,5 @@ function removeCity(cityId) {
 
 function getLoader() {
     const loader = document.getElementById("loader").content;
-    const loaderCopy = document.importNode(loader, true);
-    return loaderCopy;
+    return document.importNode(loader, true);
 }
