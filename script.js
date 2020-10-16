@@ -39,9 +39,7 @@ function PostMainCityWeather( latitude, longitude,) {
 
     const weatherData = fetchByCoords(latitude, longitude);
     weatherData.then((result) => {
-        //loader.id = result.id + "loader";
         const template = getTemplate(result, "main-");
-       // document.getElementById(loader.id).remove();
         mainCitySection.getElementsByClassName("loader")[0].remove();
         mainCitySection.appendChild(template)
     })
@@ -87,9 +85,6 @@ function fetchByCityName(cityName) {
     })
         .then(response => response.json())
         .catch(err => {
-            const ul = document.getElementById("cities-ul");
-            ul.getElementsByClassName("loader")[0].remove();
-            alert("Unable to load " + cityName + " weather");
             console.log(err);
         });
 }
@@ -157,8 +152,8 @@ function PostCityWeather(cityName) {
 
     const weatherData = fetchByCityName(cityName)
         .then((result) => {
-            if (result.cod == 404 || result.cod == 400) {
-                alert("City was not found");
+            if (!result || result.cod === 404 || result.cod === 400) {
+                alert("Unable to load " + cityName + " weather");
                 ul.getElementsByClassName("loader")[0].remove();
                 return;
             }
