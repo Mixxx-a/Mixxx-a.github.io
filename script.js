@@ -25,10 +25,16 @@ function updateWeather() {
 }
 
 function success(position) {
-    PostMainCityWeather(position.coords.latitude, position.coords.longitude);
+    postMainCityWeather(position.coords.latitude, position.coords.longitude);
 }
 
-function PostMainCityWeather( latitude, longitude,) {
+
+function error() {
+    alert("Unable to retrieve your location; Loading default...");
+    postMainCityWeather(59.89, 30.26);
+}
+
+function postMainCityWeather( latitude, longitude,) {
     const loader = getLoader();
     const mainCitySection = document.getElementById("main-city-section")
     if (mainCitySection.firstElementChild) {
@@ -37,33 +43,51 @@ function PostMainCityWeather( latitude, longitude,) {
     }
     mainCitySection.appendChild(loader);
 
-    const weatherData = fetchByCoords(latitude, longitude);
-    weatherData.then((result) => {
-        const template = getTemplate(result, "main-");
-        mainCitySection.getElementsByClassName("loader")[0].remove();
-        mainCitySection.appendChild(template)
-    })
-}
-
-function error() {
-    alert("Unable to retrieve your location; Loading default...");
-    PostMainCityWeather(59.89, 30.26);
-}
-
-function fetchByCoords(latitude, longitude) {
-    return fetch("localhost:1337/weather/coords?lat" +
-        latitude +
-        "&lon=" +
-        longitude, {
-        "method": "GET",
-    })
-        .then(response => response.json())
-        .catch(err => {
-            const mainCitySection = document.getElementById("main-city-section");
+    fetchByCoords(latitude, longitude)
+        .then(response => {
             mainCitySection.getElementsByClassName("loader")[0].remove();
-            alert("Unable to load weather");
-            console.log(err)
-    });
+            if (response !== undefined)
+            {
+                const template = getTemplate(response.json(), "main-");
+                mainCitySection.appendChild(template)
+            }
+        })
+
+
+    // if (weatherData === undefined)
+    // {
+    //     mainCitySection.getElementsByClassName("loader")[0].remove();
+    // }
+    // else
+    // {
+    //     const template = getTemplate(weatherData, "main-");
+    //     mainCitySection.getElementsByClassName("loader")[0].remove();
+    //     mainCitySection.appendChild(template)
+    // }
+}
+
+async function fetchByCoords(latitude, longitude) {
+    let response;
+    try {
+        response = await fetch("http://localhost:1337/weather/CoordsController?lat=" +
+            latitude +
+            "&lon=" +
+            longitude,
+            {
+                method: 'GET',
+                mode: 'no-cors'
+            })
+        if (response.status !== 200) {
+            alert("Unknown weather API error");
+            throw new Error("Unknown weather API error");
+        }
+
+    } catch (error) {
+        alert("Unable to load weather");
+        console.log(error)
+        response = undefined
+    }
+    return response
 }
 /*function fetchByCoords(latitude, longitude) {
     return fetch("https://community-open-weather-map.p.rapidapi.com/weather?lat=" +
@@ -163,17 +187,17 @@ function addCity() {
     }
     form.reset();
     if(flag)
-        PostCityWeather(cityName);
+        postCityWeather(cityName);
 }
 
 function loadCitiesFromStorage() {
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
-        PostCityWeather(localStorage.getItem(key));
+        postCityWeather(localStorage.getItem(key));
     }
 }
 
-function PostCityWeather(cityName) {
+function postCityWeather(cityName) {
 
     const loader = getLoader();
     const ul = document.getElementById("cities-ul");
