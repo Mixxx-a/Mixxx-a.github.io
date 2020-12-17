@@ -5,9 +5,28 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-module.exports = {
+module.exports = async function getWeather (req, res) {
 
-  friendlyName: 'CoordsController',
+  const lat = req.param('lat');
+  const lon = req.param('lon');
+  const fetchoutput = {
+    clouds: {all: 90},
+    coord: {lon: 30.37, lat: 59.92},
+    main: {temp: 286.16, pressure: 1015, humidity: 93},
+    weather: [
+      {id: 804, main: 'Clouds', description: 'overcast clouds', icon: '04n'}
+    ],
+    name: 'Smolenskoye',
+    wind: {speed: 2, deg: 120},
+    cod: 200
+  };
+  return res.ok()
+
+}
+
+/*module.exports = {
+
+  friendlyName: 'Coordinates Controller',
 
   description: 'Get weather by coordinates',
 
@@ -30,6 +49,7 @@ module.exports = {
     },
     unableToFetchWeather: {
       statusCode: 500
+      response
     }
   },
 
@@ -49,5 +69,5 @@ module.exports = {
     return exits.success(fetchoutput);
   }
 
-};
+};*/
 

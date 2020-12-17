@@ -10,6 +10,5 @@
 
 module.exports.routes = {
   '/': { view: 'pages/homepage' },
-  'GET /coords' : '/coords'
-
+  '/weather/coordinates': { controller: 'weather/coordinates', action: 'getWeather' }
 };
