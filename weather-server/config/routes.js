@@ -10,5 +10,10 @@
 
 module.exports.routes = {
   '/': { view: 'pages/homepage' },
-  '/weather/coordinates': { controller: 'weather/coordinates', action: 'getWeather' }
+  '/*': { cors: true },
+  '/weather/coordinates': { controller: 'weather/CoordinatesController', action: 'fn' },
+  '/weather/city': { controller: 'weather/CityController', action: 'fn' },
+  'POST /favourites': {controller: 'favourites/AddController', action: 'fn'},
+  'GET /favourites': {controller: 'favourites/GetController', action: 'fn'},
+  'DELETE /favourites': {controller: 'favourites/DeleteController', action: 'fn'}
 };
