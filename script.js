@@ -1,19 +1,9 @@
-window.onload = () => {
+window.onload = async () => {
     updateWeather();
-    loadCitiesFromStorage();
+    await loadWeatherFromStorage();
 };
 
-/* const fetchoutput = {
-    clouds: {all: 90},
-    coord: {lon: 30.37, lat: 59.92},
-    main: {temp: 286.16, pressure: 1015, humidity: 93},
-    weather: [
-        {id: 804, main: "Clouds", description: "overcast clouds", icon: "04n"}
-        ],
-    name: "Smolenskoye",
-    wind: {speed: 2, deg: 120},
-    cod: 200
-} */
+const baseUrl = 'http://localhost:1337'
 
 
 function updateWeather() {
@@ -34,7 +24,7 @@ function error() {
     postMainCityWeather(59.89, 30.26);
 }
 
-function postMainCityWeather( latitude, longitude,) {
+function postMainCityWeather(latitude, longitude,) {
     const loader = getLoader();
     const mainCitySection = document.getElementById("main-city-section")
     if (mainCitySection.firstElementChild) {
@@ -44,103 +34,38 @@ function postMainCityWeather( latitude, longitude,) {
     mainCitySection.appendChild(loader);
 
     fetchByCoords(latitude, longitude)
-        .then(response => {
+        .then(json => {
             mainCitySection.getElementsByClassName("loader")[0].remove();
-            if (response !== undefined)
-            {
-                const template = getTemplate(response.json(), "main-");
+            if (json !== undefined) {
+                const template = getTemplate(json, "main-");
                 mainCitySection.appendChild(template)
             }
         })
-
-
-    // if (weatherData === undefined)
-    // {
-    //     mainCitySection.getElementsByClassName("loader")[0].remove();
-    // }
-    // else
-    // {
-    //     const template = getTemplate(weatherData, "main-");
-    //     mainCitySection.getElementsByClassName("loader")[0].remove();
-    //     mainCitySection.appendChild(template)
-    // }
 }
 
 async function fetchByCoords(latitude, longitude) {
-    let response;
-    try {
-        response = await fetch("http://localhost:1337/weather/CoordsController?lat=" +
-            latitude +
-            "&lon=" +
-            longitude,
-            {
-                method: 'GET',
-                mode: 'no-cors'
-            })
-        if (response.status !== 200) {
-            alert("Unknown weather API error");
-            throw new Error("Unknown weather API error");
-        }
-
-    } catch (error) {
-        alert("Unable to load weather");
-        console.log(error)
-        response = undefined
-    }
-    return response
-}
-/*function fetchByCoords(latitude, longitude) {
-    return fetch("https://community-open-weather-map.p.rapidapi.com/weather?lat=" +
+    const response = await fetch(baseUrl + "/weather/coordinates?lat=" +
         latitude +
         "&lon=" +
-        longitude +
-        "&units=%22metric%22", {
-        "method": "GET",
-        "headers": {
-            "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
-            "x-rapidapi-key": "fbeb764c8cmsh41ef6257dea778bp1f0d66jsnff3d118dc07a"
-        }
-    })
-        .then(response => response.json())
-        .catch(err => {
-            const mainCitySection = document.getElementById("main-city-section");
-            mainCitySection.getElementsByClassName("loader")[0].remove();
-            alert("Unable to load weather");
-            console.log(err)
-    });
-}*/
-
-function fetchByCityName(cityName) {
-    const parameterName = cityName
-        .replaceAll("-", " ")
-        .replaceAll(" ", "%20");
-    return fetch("http://localhost:1337/api/controllers/city?name=" +
-        parameterName, {
-        "method": "GET"
-    })
-        .then(response => response.json())
-        .catch(err => {
-            console.log(err);
-        });
+        longitude)
+    if (response.ok) {
+        return response.json();
+    } else {
+        alert("Unable to load weather: " + response.status);
+        return undefined
+    }
 }
 
-/*function fetchByCityName(cityName) {
-    const parameterName = cityName
-        .replaceAll("-", " ")
-        .replaceAll(" ", "%20");
-    return fetch("https://community-open-weather-map.p.rapidapi.com/weather?units=%2522metric%2522&q=" +
-        parameterName, {
-        "method": "GET",
-        "headers": {
-            "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
-            "x-rapidapi-key": "fbeb764c8cmsh41ef6257dea778bp1f0d66jsnff3d118dc07a"
-        }
-    })
-        .then(response => response.json())
-        .catch(err => {
-            console.log(err);
-        });
-}*/
+async function fetchByCityName(cityName) {
+    const response = await fetch(baseUrl + "/weather/city?name=" +
+        cityName)
+    const data = await response.json();
+    if (data.cod === 404) {
+        return undefined
+    } else {
+        return data;
+    }
+}
 
 function getTemplate(json, prefix) {
 
@@ -150,20 +75,13 @@ function getTemplate(json, prefix) {
     const copytemp = document.importNode(temp, true);
 
     copytemp.getElementById(prefix + "location").innerText = json.name;
-    copytemp.getElementById(prefix + "img").src =
-        "img/" + json.weather[0].icon + ".png";
-    copytemp.getElementById(prefix + "temperature").innerText =
-        parseFloat(json.main.temp - 273.15).toFixed(0) + "°С";
-    copytemp.getElementById(prefix + "wind").innerText =
-        "Degree: " + json.wind.deg + "°, " + json.wind.speed + " m/s";
-    copytemp.getElementById(prefix + "clouds").innerText =
-        json.clouds.all + " %";
-    copytemp.getElementById(prefix + "pressure").innerText =
-        json.main.pressure + " hpa";
-    copytemp.getElementById(prefix + "humidity").innerText =
-        json.main.humidity + " %";
-    copytemp.getElementById(prefix + "coords").innerText =
-        "[" + json.coord.lat + ", " + json.coord.lon + "]";
+    copytemp.getElementById(prefix + "img").src = json.iconsrc;
+    copytemp.getElementById(prefix + "temperature").innerText = json.temperature;
+    copytemp.getElementById(prefix + "wind").innerText = json.wind;
+    copytemp.getElementById(prefix + "clouds").innerText = json.clouds;
+    copytemp.getElementById(prefix + "pressure").innerText = json.pressure;
+    copytemp.getElementById(prefix + "humidity").innerText = json.humidity;
+    copytemp.getElementById(prefix + "coords").innerText = json.coords;
 
     if (prefix === "fav-") {
         copytemp.getElementById("close-btn").value = json.id;
@@ -173,56 +91,60 @@ function getTemplate(json, prefix) {
     return copytemp;
 }
 
-function addCity() {
-    let flag = 1;
+async function addCity() {
     const form = document.getElementById("add-city-form");
     const cityName = document.getElementById("form-city-name").value;
-    for (let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        if (localStorage.getItem(key) === cityName) {
-            alert("This city is already in favourites");
-            flag = 0;
-            break;
+    form.reset();
+
+    const response = await fetch(baseUrl + "/favourites?name=" + cityName, {
+        method: 'GET'
+    })
+    if (response.cod === 409) {
+        alert("City Already Exists");
+    } else {
+        const id = await postCityWeather(cityName);
+        if (id !== undefined) {
+            const response = await fetch(baseUrl + "/favourites?name=" +
+                cityName +
+                "&id=" +
+                id, {
+                method: 'POST'
+            })
         }
     }
-    form.reset();
-    if(flag)
-        postCityWeather(cityName);
 }
 
-function loadCitiesFromStorage() {
-    for (let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        postCityWeather(localStorage.getItem(key));
+async function loadWeatherFromStorage() {
+    const response = await fetch(baseUrl + "/favourites", {
+        method: 'GET'
+    })
+    const cities = await response.json();
+    console.log(cities)
+    for (let i = 0; i < cities.length; i++) {
+        await postCityWeather(cities[i]);
     }
 }
 
-function postCityWeather(cityName) {
-
+async function postCityWeather(cityName) {
     const loader = getLoader();
     const ul = document.getElementById("cities-ul");
     ul.appendChild(loader);
-
-    const weatherData = fetchByCityName(cityName)
-        .then((result) => {
-            if (!result || result.cod === 404 || result.cod === 400) {
-                alert("Unable to load " + cityName + " weather");
-                ul.getElementsByClassName("loader")[0].remove();
-                return;
-            }
-            if (!localStorage[result.id]) {
-                localStorage.setItem(result.id, cityName);
-            }
-            //loader.id = result.id + "loader";
-            const template = getTemplate(result, "fav-");
-            //document.getElementById(loader.id).remove();
-            ul.getElementsByClassName("loader")[0].remove();
-            ul.appendChild(template);
-        })
+    const json = await fetchByCityName(cityName)
+    if (json === undefined) {
+        alert("Unable to load " + cityName + " weather");
+        ul.getElementsByClassName("loader")[0].remove();
+        return;
+    }
+    const template = getTemplate(json, "fav-");
+    ul.getElementsByClassName("loader")[0].remove();
+    ul.appendChild(template);
+    return json.id;
 }
 
-function removeCity(cityId) {
-    localStorage.removeItem(cityId);
+async function removeCity(cityId) {
+    const responce = await fetch(baseUrl + "/favourites?id=" + cityId, {
+        method: 'DELETE'
+    })
     document.getElementById(cityId).remove();
 
 }
