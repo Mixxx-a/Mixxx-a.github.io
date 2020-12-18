@@ -44,26 +44,36 @@ function postMainCityWeather(latitude, longitude,) {
 }
 
 async function fetchByCoords(latitude, longitude) {
-    const response = await fetch(baseUrl + "/weather/coordinates?lat=" +
-        latitude +
-        "&lon=" +
-        longitude)
-    if (response.ok) {
-        return response.json();
-    } else {
-        alert("Unable to load weather: " + response.status);
-        return undefined
+    try {
+        const response = await fetch(baseUrl + "/weather/coordinates?lat=" +
+            latitude +
+            "&lon=" +
+            longitude)
+        if (response.ok) {
+            return response.json();
+        } else {
+            alert("Unable to load weather: " + response.status);
+            return undefined
+        }
+    } catch (error) {
+        alert("Unable to load weather: Server is down")
+        console.log(error);
     }
 }
 
 async function fetchByCityName(cityName) {
-    const response = await fetch(baseUrl + "/weather/city?name=" +
-        cityName)
-    const data = await response.json();
-    if (data.cod === 404) {
-        return undefined
-    } else {
-        return data;
+    try {
+        const response = await fetch(baseUrl + "/weather/city?name=" +
+            cityName)
+        const data = await response.json();
+        if (data.cod === 404) {
+            return undefined
+        } else {
+            return data;
+        }
+    } catch (error) {
+        alert("Unable to load weather: Server is down");
+        console.log(error);
     }
 }
 
@@ -115,13 +125,18 @@ async function addCity() {
 }
 
 async function loadWeatherFromStorage() {
-    const response = await fetch(baseUrl + "/favourites", {
-        method: 'GET'
-    })
-    const cities = await response.json();
-    console.log(cities)
-    for (let i = 0; i < cities.length; i++) {
-        await postCityWeather(cities[i]);
+    try {
+        const response = await fetch(baseUrl + "/favourites", {
+            method: 'GET'
+        })
+        const cities = await response.json();
+        console.log(cities)
+        for (let i = 0; i < cities.length; i++) {
+            await postCityWeather(cities[i]);
+        }
+    } catch (error) {
+        alert("Unable to load weather: Server is down")
+        console.log(error)
     }
 }
 
