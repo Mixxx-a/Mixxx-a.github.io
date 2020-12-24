@@ -15,7 +15,7 @@ module.exports = {
       required: true
     },
     cityID: {
-      type: 'integer',
+      type: 'number',
       columnName: 'city_id',
       required: true
     }
