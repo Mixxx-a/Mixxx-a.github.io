@@ -50,7 +50,7 @@ async function fetchByCoords(latitude, longitude) {
             "&lon=" +
             longitude)
         if (response.ok) {
-            return response.json();
+            return await response.json();
         } else {
             alert("Unable to load weather: " + response.status);
             return undefined
@@ -72,7 +72,7 @@ async function fetchByCityName(cityName) {
             return data;
         }
     } catch (error) {
-        alert("Unable to load weather: Server is down");
+        alert("Unable to load weather");
         console.log(error);
     }
 }
@@ -167,6 +167,14 @@ async function removeCity(cityId) {
 function getLoader() {
     const loader = document.getElementById("loader").content;
     return document.importNode(loader, true);
+}
+
+exports.fetchByCoords = async function (lat, lon) {
+    return await fetchByCoords(lat, lon);
+}
+
+exports.fetchByCityName = async function (cityName) {
+    return await fetchByCityName(cityName);
 }
 
 exports.getTemplate = function (json, prefix) {

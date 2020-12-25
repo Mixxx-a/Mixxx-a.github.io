@@ -134,7 +134,7 @@ const fetchMock = require('fetch-mock');
 const expect = require('chai').expect;
 const script = require("../script");
 
-const baseURL = 'http://localhost:1337';
+const baseUrl = 'http://localhost:1337';
 
 const mockCity = {
     clouds: "75 %",
@@ -159,6 +159,24 @@ const correctLoader = `<div class="loader">
         </div>
     </div>`
 
+describe('Fetch', () => {
+    it('Fetch by coords with ok response works correctly', async () => {
+        fetchMock.get(baseUrl + "/weather/coordinates?lat=59.89&lon=30.26", mockCity)
+        const result = await script.fetchByCoords(59.89, 30.26);
+        expect(result).to.be.a('object');
+        fetchMock.done();
+        fetchMock.restore();
+    })
+    it('Fetch by city name with ok response works correctly', async () => {
+        fetchMock.get(baseUrl + "/weather/city?name=Saint%20Petersburg", mockCity)
+        const result = await script.fetchByCityName("Saint Petersburg");
+        expect(result).to.be.a('object');
+        fetchMock.done();
+        fetchMock.restore();
+    })
+})
+
+
 describe('Get template', () => {
 
     it('Should render main weather template correctly', (done) => {
@@ -171,8 +189,6 @@ describe('Get template', () => {
         expect(template.getElementById("main-pressure").innerText).to.equal("1002 hpa");
         expect(template.getElementById("main-humidity").innerText).to.equal("97 %");
         expect(template.getElementById("main-coords").innerText).to.equal("[59.89, 30.26]");
-        fetchMock.done();
-        fetchMock.restore();
         done();
     })
 
@@ -187,8 +203,6 @@ describe('Get template', () => {
         expect(template.getElementById("fav-humidity").innerText).to.equal("97 %");
         expect(template.getElementById("fav-coords").innerText).to.equal("[59.89, 30.26]");
         expect(template.getElementById("close-btn").value).to.equal('498817');
-        fetchMock.done();
-        fetchMock.restore();
         done();
     })
 })
